@@ -27,6 +27,7 @@
 #include "ED_curve.hh"
 #include "ED_curves.hh"
 #include "ED_curves_sculpt.hh"
+#include "ED_custom.hh"
 #include "ED_fileselect.hh"
 #include "ED_geometry.hh"
 #include "ED_gizmo_library.hh"
@@ -62,6 +63,7 @@ void ED_spacetypes_init()
   U.widget_unit = 20;
 
   /* Create space types. */
+  ED_spacetype_custom();
   ED_spacetype_outliner();
   ED_spacetype_view3d();
   ED_spacetype_ipo();

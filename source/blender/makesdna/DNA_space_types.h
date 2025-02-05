@@ -2088,6 +2088,19 @@ typedef enum eSpreadsheetColumnValueType {
 /** \} */
 
 /* -------------------------------------------------------------------- */
+
+/* Custom Editor */
+typedef struct SpaceCustom {
+  SpaceLink *next, *prev;
+  ListBase regionbase; /* storage of regions for inactive spaces */
+  char spacetype;
+  char link_flag;
+  char _pad0[6];
+} SpaceCustom;
+
+
+/* -------------------------------------------------------------------- */
+
 /** \name Space Defines (eSpace_Type)
  * \{ */
 
@@ -2126,9 +2139,10 @@ typedef enum eSpace_Type {
   SPACE_CLIP = 20,
   SPACE_TOPBAR = 21,
   SPACE_STATUSBAR = 22,
-  SPACE_SPREADSHEET = 23
+  SPACE_SPREADSHEET = 23,
+  SPACE_CUSTOM = 24,
 
-#define SPACE_TYPE_NUM (SPACE_SPREADSHEET + 1)
+#define SPACE_TYPE_NUM (SPACE_CUSTOM + 1)
 } eSpace_Type;
 
 /* use for function args */
