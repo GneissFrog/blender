@@ -42,16 +42,34 @@
 static SpaceLink *custom_create(const ScrArea * /*area*/, const Scene * /*scene*/)
 {
   SpaceCustom *custom = static_cast<SpaceCustom *>(MEM_callocN(sizeof(SpaceCustom), "initcustom"));
+  if (!custom) {
+    return nullptr;
+  }
+
   custom->spacetype = SPACE_CUSTOM;
 
   /* Header */
   ARegion *region = BKE_area_region_new();
+  if (!region) {
+    MEM_freeN(custom);
+    return nullptr;
+  }
+
   BLI_addtail(&custom->regionbase, region);
   region->regiontype = RGN_TYPE_HEADER;
   region->alignment = (U.uiflag & USER_HEADER_BOTTOM) ? RGN_ALIGN_BOTTOM : RGN_ALIGN_TOP;
 
   /* Main region */
   region = BKE_area_region_new();
+  if (!region) {
+    // Clean up the header region before returning
+    region = static_cast<ARegion *>(custom->regionbase.first);
+    BLI_remlink(&custom->regionbase, region);
+    MEM_freeN(region);
+    MEM_freeN(custom);
+    return nullptr;
+  }
+
   BLI_addtail(&custom->regionbase, region);
   region->regiontype = RGN_TYPE_WINDOW;
 
@@ -78,25 +96,55 @@ static void custom_main_region_draw(const bContext *C, ARegion *region)
   UI_fontstyle_draw_simple(fstyle, x, y, "Custom Editor", text_col);
 }
 
+static void custom_main_region_init(wmWindowManager *wm, ARegion *region)
+{
+  UI_view2d_region_reinit(&region->v2d, V2D_COMMONVIEW_HEADER, region->winx, region->winy);
+}
+
+static void custom_header_init(wmWindowManager *wm, ARegion *region)
+{
+  ED_region_header_init(region);
+}
+
+
 static void custom_header_draw(const bContext *C, ARegion *region)
 {
+  if (!C || !region) {
+    return;
+  }
+
   const uiStyle *style = UI_style_get();
+  if (!style) {
+    return;
+  }
+
+  bContext *C_ptr = const_cast<bContext *>(C);
+
+  ED_region_header(C, region);
 
   uiBlock *block = UI_block_begin(C, region, __func__, UI_EMBOSS);
+  if (!block) {
+    return;
+  }
 
   uiLayout *layout = UI_block_layout(
       block, UI_LAYOUT_HORIZONTAL, UI_LAYOUT_HEADER, 0, 0, region->winx, HEADERY, 0, style);
 
+  if (!layout) {
+    UI_block_end(C, block);
+    return;
+  }
+
+  /* Editor type selector */
+  ED_area_header_switchbutton(C_ptr, block, 0);
+
+  /* Label */
   uiItemL(layout, "Custom Editor", ICON_NONE);
 
   UI_block_layout_resolve(block, nullptr, nullptr);
   UI_block_end(C, block);
 }
 
-static void custom_main_region_init(wmWindowManager *wm, ARegion *region)
-{
-  UI_view2d_region_reinit(&region->v2d, V2D_COMMONVIEW_HEADER, region->winx, region->winy);
-}
 
 static void custom_free(SpaceLink * /*sl*/)
 {
@@ -131,10 +179,10 @@ static void custom_keymap(wmKeyConfig *keyconf)
 
 void ED_spacetype_custom()
 {
-  printf("Starting custom editor registration...\n");
-
   std::unique_ptr<SpaceType> st = std::make_unique<SpaceType>();
-  ARegionType *art;
+  if (!st) {
+    return;
+  }
 
   st->spaceid = SPACE_CUSTOM;
   STRNCPY(st->name, "Custom");
@@ -144,27 +192,30 @@ void ED_spacetype_custom()
   st->init = custom_init;
   st->duplicate = custom_duplicate;
 
-  printf("Registered basic space type functions for custom editor\n");
+  /* Header region */
+  ARegionType *art = MEM_cnew<ARegionType>("custom header region");
+  if (!art) {
+    return;
+  }
 
-  /* regions: main window */
-  art = MEM_cnew<ARegionType>("spacetype custom region");
+  art->regionid = RGN_TYPE_HEADER;
+  art->prefsizey = HEADERY;
+  art->keymapflag = ED_KEYMAP_UI | ED_KEYMAP_VIEW2D | ED_KEYMAP_HEADER;
+  art->init = custom_header_init;
+  art->draw = custom_header_draw;
+  BLI_addhead(&st->regiontypes, art);
+
+  /* Main region */
+  art = MEM_cnew<ARegionType>("custom main region");
+  if (!art) {
+    return;
+  }
+
   art->regionid = RGN_TYPE_WINDOW;
   art->keymapflag = ED_KEYMAP_UI | ED_KEYMAP_VIEW2D;
   art->init = custom_main_region_init;
   art->draw = custom_main_region_draw;
   BLI_addhead(&st->regiontypes, art);
 
-  printf("Added main region to custom editor\n");
-
-  /* regions: header */
-  art = MEM_cnew<ARegionType>("spacetype custom header");
-  art->regionid = RGN_TYPE_HEADER;
-  art->prefsizey = HEADERY;
-  art->draw = custom_header_draw;
-  BLI_addhead(&st->regiontypes, art);
-
-  printf("Added header region to custom editor\n");
-
   BKE_spacetype_register(std::move(st));
-  printf("Completed custom editor registration\n");
 }
