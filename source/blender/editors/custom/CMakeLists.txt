@@ -1,18 +1,22 @@
 set(INC
+  # Current paths were relative, but need full paths from source root
+  # ../include -> ../../editors/include
+  ../../editors/include
   ../../blenkernel
   ../../blenlib
-  ../../gpu
   ../../makesdna
   ../../makesrna
   ../../windowmanager
+  ../../gpu
+  ../../imbuf
+  ../../nodes
+  # Ensure guardedalloc path is correct
   ../../../../intern/guardedalloc
 )
 
 set(SRC
   space_custom.cc
-)
-
-set(INC_SYS
+  space_custom.hh
 )
 
 set(LIB

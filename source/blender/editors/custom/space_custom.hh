@@ -8,14 +8,12 @@
 
 #pragma once
 
-#include "BLI_listbase.h"
+#include "DNA_space_types.h"
 
-struct SpaceCustom {
-  struct SpaceLink *next, *prev;
-  /** Storage of regions for inactive spaces. */
-  ListBase regionbase;
-  /** The specific space-type the editor belongs to. */
-  char spacetype;
-  char link_flag;
-  char _pad0[6];
-};
+/** Forward declarations */
+struct ARegion;
+struct bContext;
+struct wmWindowManager;
+
+/* Functions */
+void ED_spacetype_custom(void);

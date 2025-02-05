@@ -135,6 +135,13 @@ const EnumPropertyItem rna_enum_space_type_items[] = {
      "Global bar at the bottom of the "
      "screen for general status information"},
 
+    RNA_ENUM_ITEM_HEADING(N_("Custom"), nullptr),
+    {SPACE_CUSTOM,
+     "CUSTOM",
+     ICON_COMMUNITY,  // You can choose an appropriate icon
+     "Custom Editor",
+     "Custom editor space type"},
+
     /* Data. */
     RNA_ENUM_ITEM_HEADING(N_("Data"), nullptr),
     {SPACE_OUTLINER,
