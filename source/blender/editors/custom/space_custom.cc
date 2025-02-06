@@ -23,6 +23,10 @@
 #include "DNA_space_types.h" /* For SPACE_CUSTOM definition */
 #include "DNA_userdef_types.h"
 
+#include "RNA_access.hh"
+#include "RNA_define.hh"
+
+
 #include "ED_screen.hh"
 #include "ED_space_api.hh"
 
@@ -103,44 +107,51 @@ static void custom_main_region_init(wmWindowManager *wm, ARegion *region)
 
 static void custom_header_init(wmWindowManager *wm, ARegion *region)
 {
+  if (!region) {
+    return;
+  }
+
   ED_region_header_init(region);
+  region->flag &= ~RGN_FLAG_HIDDEN;
 }
 
 
 static void custom_header_draw(const bContext *C, ARegion *region)
 {
-  if (!C || !region) {
-    return;
-  }
-
   const uiStyle *style = UI_style_get();
-  if (!style) {
-    return;
-  }
-
   bContext *C_ptr = const_cast<bContext *>(C);
 
+  /* Draw header background */
   ED_region_header(C, region);
 
+  /* Create UI block */
   uiBlock *block = UI_block_begin(C, region, __func__, UI_EMBOSS);
-  if (!block) {
-    return;
-  }
-
   uiLayout *layout = UI_block_layout(
       block, UI_LAYOUT_HORIZONTAL, UI_LAYOUT_HEADER, 0, 0, region->winx, HEADERY, 0, style);
 
-  if (!layout) {
-    UI_block_end(C, block);
-    return;
-  }
+  /* First add the editor type selector */
+  int xco = ED_area_header_switchbutton(C_ptr, block, 0);
 
-  /* Editor type selector */
-  ED_area_header_switchbutton(C_ptr, block, 0);
+  /* After the editor type selector, switch back to standard layout */
+  layout = UI_block_layout(
+      block, UI_LAYOUT_HORIZONTAL, UI_LAYOUT_HEADER, xco, 0, region->winx, HEADERY, 0, style);
 
-  /* Label */
+  /* Add some spacing */
+  uiItemS(layout);
+
+  /* Editor label */
   uiItemL(layout, "Custom Editor", ICON_NONE);
 
+  /* Flexible space */
+  uiLayout *sub = uiLayoutRow(layout, true);
+  uiItemS(sub);
+
+  /* Header tools menu */
+  if ((region->flag & RGN_FLAG_HIDDEN) == 0) {
+    ED_screens_header_tools_menu_create(C_ptr, layout, nullptr);
+  }
+
+  /* Finish up */
   UI_block_layout_resolve(block, nullptr, nullptr);
   UI_block_end(C, block);
 }
@@ -175,6 +186,7 @@ static void custom_keymap(wmKeyConfig *keyconf)
   WM_keymap_add_item(keymap, "SCREEN_OT_space_context_cycle", &params);
 }
 
+
 /* ******************** registration ********************/
 
 void ED_spacetype_custom()
@@ -183,6 +195,8 @@ void ED_spacetype_custom()
   if (!st) {
     return;
   }
+
+  ARegionType *art;
 
   st->spaceid = SPACE_CUSTOM;
   STRNCPY(st->name, "Custom");
@@ -193,7 +207,8 @@ void ED_spacetype_custom()
   st->duplicate = custom_duplicate;
 
   /* Header region */
-  ARegionType *art = MEM_cnew<ARegionType>("custom header region");
+  /*ARegionType *art = MEM_cnew < ARegionType>("custom header region");*/
+  art = static_cast<ARegionType *>(MEM_callocN(sizeof(ARegionType), "custom header region"));
   if (!art) {
     return;
   }
@@ -202,6 +217,7 @@ void ED_spacetype_custom()
   art->prefsizey = HEADERY;
   art->keymapflag = ED_KEYMAP_UI | ED_KEYMAP_VIEW2D | ED_KEYMAP_HEADER;
   art->init = custom_header_init;
+  art->layout = ED_region_header_layout;  // Add this line
   art->draw = custom_header_draw;
   BLI_addhead(&st->regiontypes, art);
 

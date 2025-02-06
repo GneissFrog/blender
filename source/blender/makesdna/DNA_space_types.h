@@ -2092,7 +2092,7 @@ typedef enum eSpreadsheetColumnValueType {
 /* Custom Editor */
 typedef struct SpaceCustom {
   SpaceLink *next, *prev;
-  ListBase regionbase; /* storage of regions for inactive spaces */
+  ListBase regionbase;
   char spacetype;
   char link_flag;
   char _pad0[6];

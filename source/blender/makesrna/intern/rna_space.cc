@@ -630,7 +630,8 @@ static StructRNA *rna_Space_refine(PointerRNA *ptr)
       return &RNA_SpaceClipEditor;
     case SPACE_SPREADSHEET:
       return &RNA_SpaceSpreadsheet;
-
+    case SPACE_CUSTOM:
+      return &RNA_SpaceCustom;
       /* Currently no type info. */
     case SPACE_SCRIPT:
     case SPACE_EMPTY:
@@ -3760,6 +3761,15 @@ static void rna_def_space_mask_info(StructRNA *srna, int noteflag, const char *m
   RNA_def_property_update(prop, noteflag, nullptr);
 }
 
+static void rna_def_space_custom(BlenderRNA *brna)
+{
+  StructRNA *srna;
+
+  srna = RNA_def_struct(brna, "SpaceCustom", "Space");
+  RNA_def_struct_sdna(srna, "SpaceCustom");
+  RNA_def_struct_ui_text(srna, "Custom Editor", "Custom editor space data");
+}
+
 static void rna_def_space_image_uv(BlenderRNA *brna)
 {
   StructRNA *srna;
@@ -3974,7 +3984,7 @@ static void rna_def_space_outliner(BlenderRNA *brna)
       {0, nullptr, 0, nullptr, nullptr},
   };
 
-  srna = RNA_def_struct(brna, "SpaceOutliner", "Space");
+  srna = RNA_def_struct(brna, "SpaceOutliner", nullptr);
   RNA_def_struct_sdna(srna, "SpaceOutliner");
   RNA_def_struct_ui_text(srna, "Space Outliner", "Outliner space data");
 
@@ -8683,6 +8693,7 @@ void RNA_def_space(BlenderRNA *brna)
   rna_def_space_node(brna);
   rna_def_space_clip(brna);
   rna_def_space_spreadsheet(brna);
+  rna_def_space_custom(brna);
 }
 
 #endif

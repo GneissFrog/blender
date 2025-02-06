@@ -116,6 +116,40 @@ static int report_replay_exec(bContext *C, wmOperator * /*op*/)
   return OPERATOR_FINISHED;
 }
 
+static void print_report_to_console(const Report *report)
+{
+  // Skip if no message
+  if (!report || !report->message) {
+    return;
+  }
+
+  // Get report type as string
+  const char *type_str = "Unknown";
+  switch (report->type) {
+    case RPT_DEBUG:
+      type_str = "Debug";
+      break;
+    case RPT_INFO:
+      type_str = "Info";
+      break;
+    case RPT_OPERATOR:
+      type_str = "Operator";
+      break;
+    case RPT_PROPERTY:
+      type_str = "Property";
+      break;
+    case RPT_WARNING:
+      type_str = "Warning";
+      break;
+    case RPT_ERROR:
+      type_str = "Error";
+      break;
+  }
+
+  // Print to console with type prefix
+  printf("[Blender %s]: %s\n", type_str, report->message);
+}
+
 void INFO_OT_report_replay(wmOperatorType *ot)
 {
   /* identifiers */
