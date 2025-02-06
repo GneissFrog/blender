@@ -10,6 +10,7 @@ set(INC
   ../../gpu
   ../../imbuf
   ../../nodes
+  ../../editors/interface/templates 
   # Ensure guardedalloc path is correct
   ../../../../intern/guardedalloc
 )

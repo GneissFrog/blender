@@ -36,6 +36,7 @@
 #include "UI_interface.hh"
 #include "UI_resources.hh"
 #include "UI_view2d.hh"
+#include "interface_templates_intern.hh"
 
 #include "space_custom.hh"
 
@@ -129,12 +130,8 @@ static void custom_header_draw(const bContext *C, ARegion *region)
   uiLayout *layout = UI_block_layout(
       block, UI_LAYOUT_HORIZONTAL, UI_LAYOUT_HEADER, 0, 0, region->winx, HEADERY, 0, style);
 
-  /* First add the editor type selector */
-  int xco = ED_area_header_switchbutton(C_ptr, block, 0);
-
-  /* After the editor type selector, switch back to standard layout */
-  layout = UI_block_layout(
-      block, UI_LAYOUT_HORIZONTAL, UI_LAYOUT_HEADER, xco, 0, region->winx, HEADERY, 0, style);
+  /* Use the template system to add the editor type switcher */
+  uiTemplateHeader(layout, C_ptr);
 
   /* Add some spacing */
   uiItemS(layout);
