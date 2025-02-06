@@ -9,32 +9,23 @@ class CUSTOM_HT_header(Header):
 
     def draw(self, context):
         layout = self.layout
+        st = context.space_data
+        layout.template_header()
 
-        # Add the standard header elements (editor type selector, etc)
-        row = layout.row(align=True)
-        row.template_header()
+        # Draw the editor menus
+        CUSTOM_MT_editor_menus.draw_collapsible(context, layout)
 
-        # Add some spacing
         layout.separator_spacer()
-
-        # Editor label
         layout.label(text="Custom Editor")
-
-        # Flexible space
         layout.separator_spacer()
-
-        # Add standard header buttons (like maximize, etc)
-        if context.region.alignment != 'RIGHT':
-            # Only add these buttons if we're not in the right-aligned region
-            layout.popover(
-                panel="SCREEN_PT_header_tools",
-                text="",
-                icon='DOWNARROW_HLT',
-            )
 
 class CUSTOM_MT_editor_menus(Menu):
     bl_idname = "CUSTOM_MT_editor_menus"
     bl_label = ""
+
+    @classmethod
+    def draw_collapsible(cls, context, layout):
+        layout.menu(cls.bl_idname)
 
     def draw(self, context):
         layout = self.layout
@@ -46,6 +37,9 @@ class CUSTOM_MT_view(Menu):
 
     def draw(self, context):
         layout = self.layout
+        layout.prop(context.space_data, "show_region_ui", text="Sidebar")
+        layout.prop(context.space_data, "show_region_tools", text="Tools")
+        layout.separator()
         layout.operator("screen.area_dupli", text="New Window")
         layout.separator()
         layout.operator("screen.header_toggle_menus", text="Show Menus", icon='HIDE_OFF')
@@ -57,23 +51,48 @@ class CUSTOM_MT_select(Menu):
         layout = self.layout
         layout.label(text="Select Menu")
 
-# This is the main panel that will appear in the UI
-class CUSTOM_PT_main_panel(Panel):
+# Main window panels
+class CUSTOM_PT_main(Panel):
     bl_space_type = 'CUSTOM'
     bl_region_type = 'WINDOW'
-    bl_label = "Custom Panel"
+    bl_label = "Main Panel"
+    bl_category = "Main"
 
     def draw(self, context):
         layout = self.layout
         layout.label(text="Custom Editor Panel")
         layout.operator("screen.space_context_cycle")
 
+# Tools region panels
+class CUSTOM_PT_tools(Panel):
+    bl_space_type = 'CUSTOM'
+    bl_region_type = 'TOOLS'
+    bl_label = "Tools"
+    bl_category = "Tools"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="Tools Panel")
+
+# UI/Sidebar region panels
+class CUSTOM_PT_sidebar(Panel):
+    bl_space_type = 'CUSTOM'
+    bl_region_type = 'UI'
+    bl_label = "Sidebar"
+    bl_category = "Sidebar"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="Sidebar Panel")
+
 classes = (
     CUSTOM_HT_header,
     CUSTOM_MT_editor_menus,
     CUSTOM_MT_view,
     CUSTOM_MT_select,
-    CUSTOM_PT_main_panel,
+    CUSTOM_PT_main,
+    CUSTOM_PT_tools,
+    CUSTOM_PT_sidebar,
 )
 
 def register():
