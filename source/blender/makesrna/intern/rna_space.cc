@@ -3764,12 +3764,24 @@ static void rna_def_space_mask_info(StructRNA *srna, int noteflag, const char *m
 static void rna_def_space_custom(BlenderRNA *brna)
 {
   StructRNA *srna;
+  PropertyRNA *prop;
 
   srna = RNA_def_struct(brna, "SpaceCustom", "Space");
-  RNA_def_struct_sdna(srna, "SpaceCustom");
+  RNA_def_struct_sdna(srna, "SpaceCustom");  // Changed from "Custom" to "SpaceCustom"
   RNA_def_struct_ui_text(srna, "Custom Editor", "Custom editor space data");
-}
 
+  prop = RNA_def_property(srna, "show_region_ui", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, NULL, "flag", CUSTOM_SHOW_REGION_UI);
+  RNA_def_property_ui_text(prop, "Show UI", "Show UI region");
+  RNA_def_property_update(prop, NC_SPACE | ND_SPACE_CUSTOM, "rna_Space_region_update");
+
+  prop = RNA_def_property(srna, "show_region_tools", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, NULL, "flag", CUSTOM_SHOW_REGION_TOOLS);
+  RNA_def_property_ui_text(prop, "Show Tools", "Show tools region");
+  RNA_def_property_update(prop, NC_SPACE | ND_SPACE_CUSTOM, "rna_Space_region_update");
+
+  RNA_def_struct_refine_func(srna, "rna_Space_custom_refine");
+}
 static void rna_def_space_image_uv(BlenderRNA *brna)
 {
   StructRNA *srna;
@@ -8664,6 +8676,9 @@ static void rna_def_space_spreadsheet(BlenderRNA *brna)
   RNA_def_property_ui_text(prop, "Row Filters", "Filters to remove rows from the displayed data");
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_SPREADSHEET, nullptr);
 }
+
+
+
 
 void RNA_def_space(BlenderRNA *brna)
 {

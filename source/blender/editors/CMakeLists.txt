@@ -57,4 +57,4 @@ if(WITH_BLENDER)
 endif()
 
 add_subdirectory(datafiles)
-add_subdirectory(custom)
+add_subdirectory(space_custom)

@@ -1000,6 +1000,15 @@ SpaceSpreadsheet *CTX_wm_space_spreadsheet(const bContext *C)
   return nullptr;
 }
 
+SpaceCustom *CTX_wm_space_custom(const bContext *C)
+{
+  ScrArea *area = CTX_wm_area(C);
+  if (area && area->spacetype == SPACE_CUSTOM) {
+    return (SpaceCustom *)area->spacedata.first;
+  }
+  return nullptr;
+}
+
 void CTX_wm_manager_set(bContext *C, wmWindowManager *wm)
 {
   C->wm.manager = wm;

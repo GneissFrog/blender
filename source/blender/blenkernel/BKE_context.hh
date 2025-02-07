@@ -71,7 +71,7 @@ struct wmMsgBus;
 struct wmWindow;
 struct wmWindowManager;
 struct WorkSpace;
-
+struct SpaceCustom;
 /* Structs */
 
 struct bContext;
@@ -222,6 +222,7 @@ SpaceUserPref *CTX_wm_space_userpref(const bContext *C);
 SpaceClip *CTX_wm_space_clip(const bContext *C);
 SpaceTopBar *CTX_wm_space_topbar(const bContext *C);
 SpaceSpreadsheet *CTX_wm_space_spreadsheet(const bContext *C);
+SpaceCustom *CTX_wm_space_custom(const bContext *C);
 
 void CTX_wm_manager_set(bContext *C, wmWindowManager *wm);
 void CTX_wm_window_set(bContext *C, wmWindow *win);

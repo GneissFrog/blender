@@ -2096,9 +2096,17 @@ typedef struct SpaceCustom {
   char spacetype;
   char link_flag;
   char _pad0[6];
+  int flag;       // Add flag member for region visibility
+  char _pad1[4];  // Keep aligned
 } SpaceCustom;
 
+/* SpaceCustom.flag */
+enum {
+  CUSTOM_SHOW_REGION_UI = (1 << 0),
+  CUSTOM_SHOW_REGION_TOOLS = (1 << 1),
+};
 
+#define ND_SPACE_CUSTOM (1 << 18) /* Custom editor needs updating */
 /* -------------------------------------------------------------------- */
 
 /** \name Space Defines (eSpace_Type)

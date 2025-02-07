@@ -213,7 +213,7 @@ void RNA_def_movieclip(BlenderRNA *brna);
 void RNA_def_tracking(BlenderRNA *brna);
 void RNA_def_mask(BlenderRNA *brna);
 void RNA_def_xr(BlenderRNA *brna);
-
+//void rna_def_space_custom(BlenderRNA *brna);
 /* Common Define functions */
 
 void rna_def_attributes_common(StructRNA *srna, AttributeOwnerType type);

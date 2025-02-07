@@ -44,6 +44,7 @@ set(DEFSRC
   rna_curve.cc
   rna_curveprofile.cc
   rna_curves.cc
+  
   rna_depsgraph.cc
   rna_dynamicpaint.cc
   rna_fcurve.cc
@@ -257,6 +258,7 @@ set(INC
   ../../sequencer
   ../../simulation
   ../../windowmanager
+  ../../editors/space_custom
   ../../editors/asset
   ../../editors/include
   ../../render
@@ -469,6 +471,7 @@ set(SRC
   rna_access.cc
   rna_access_compare_override.cc
   rna_path.cc
+
   ${GENSRC}
 
   ${SRC_RNA_INC}
@@ -477,6 +480,7 @@ set(SRC
   rna_internal.hh
   rna_internal_types.hh
   rna_mesh_utils.hh
+
 )
 
 set(LIB
@@ -485,7 +489,7 @@ set(LIB
   PRIVATE bf::dependencies::optional::tbb
   PRIVATE extern_fmtlib
   bf_editor_space_api
-
+  bf_editor_space_custom
   bf_editor_animation
   bf_editor_armature
   bf_editor_asset
